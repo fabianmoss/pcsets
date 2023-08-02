@@ -16,18 +16,17 @@
     <!-- Display the list of logged sets -->
     <div class="mt-4">
       <h3>Logged Sets:</h3>
-      <ul class="list-group">
-        <li
+      <div class="pcset-buttons">
+        <button
           v-for="set in loggedSets"
           :key="set"
           @click="selectSet(set)"
-          class="list-group-item"
+          class="btn btn-secondary"
           :class="{ 'active': set === selectedSet }"
-          style="cursor: pointer"
         >
           {{ set }}
-        </li>
-      </ul>
+        </button>
+      </div>
     </div>
     <div v-if="analysisResult" class="mt-4">
       <p><strong>Normal Form:</strong> {{ analysisResult.normalForm }}</p>
@@ -100,19 +99,35 @@ export default {
 </script>
 
 <style>
-.list-group {
+.btn-group {
   margin-top: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 0;
 }
 
-.list-group-item {
+.pcset-buttons {
+  display: flex;
+  gap: 5px; /* Add some space between the buttons (you can adjust this value) */
+}
+
+.btn {
   cursor: pointer;
-  border-bottom: 1px solid #ccc;
+  flex: 0 0 auto; /* Each button will only span the width of the content (pcset entered) */
 }
 
-.list-group-item:last-child {
-  border-bottom: none;
+.btn-secondary {
+  background-color: #ccc;
+  color: #fff;
+  border: 1px solid #ccc;
+  margin-right: 5px;
+}
+
+.btn.active {
+  background-color: #007bff !important; /* Change this to your preferred active color */
+  border-color: #007bff !important;
+}
+
+.btn:not(.active):hover {
+  background-color: #eee; /* Change this to your preferred inactive hover color */
+  border-color: #aaa; /* Change this to your preferred inactive border color */
+  color: #000;
 }
 </style>
