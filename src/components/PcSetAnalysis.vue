@@ -1,17 +1,24 @@
 <template>
   <div>
     <h2 class="mb-4">Pitch-Class Set Analysis</h2>
-    <div class="form-group">
+    <div class="form-group position-relative">
       <label for="pcSetInput">Enter Pitch-Class Set:</label>
       <input
         id="pcSetInput"
         class="form-control"
         type="text"
-        v-model="pcSet"
+        v-model.trim="pcSet"
         @input="analyze(pcSet)"
         @keydown.enter="logSet(pcSet)"
         placeholder="Enter pitch class set, e.g., 047 or 26E"
+        title="You entered invalid characters for pitch classes. Only 0-9, T, and E are valid."
+        :class="{
+          'is-invalid': invalidPitchClass
+        }"
       />
+      <div class="invalid-feedback" v-if="invalidPitchClass">
+        Please enter valid pitch classes (0-9, T, or E).
+      </div>
     </div>
     <!-- Display the list of logged sets -->
     <div class="mt-4">
@@ -28,8 +35,8 @@
         >
           {{ set }}
           <span class="remove-button" @click="removeSet(set)">
-          <i class="fas fa-times"></i> <!-- Font Awesome "times" icon -->
-        </span>
+            <i class="fas fa-times"></i> <!-- Font Awesome "times" icon -->
+          </span>
         </button>
       </div>
     </div>
@@ -43,11 +50,11 @@
     </div>
     <!-- Add the PcSetVisualizer component below the analytical output -->
     <PcSetVisualizer 
-    :activePitchClassSet="parsePcSet(selectedSet)" 
-    :active-color="activeColor"
-    :parsePcSet="parsePcSet"
-    :key="selectedSet"
-    @removeSet="removeSet"
+      :activePitchClassSet="parsePcSet(selectedSet)" 
+      :active-color="activeColor"
+      :parsePcSet="parsePcSet"
+      :key="selectedSet"
+      @removeSet="removeSet"
     />
   </div>
 </template>
@@ -65,11 +72,19 @@ export default {
       showRemoveButton: null,
     };
   },
+  computed: {
+    parsedPcSet() {
+      return this.parsePcSet(this.pcSet);
+    },
+    invalidPitchClass() {
+      return this.parsedPcSet.some((pc) => pc < 0 || pc > 11);
+    },
+  },
   watch: {
     loggedSets: {
       handler(newLoggedSets) {
         if (!newLoggedSets.includes(this.selectedSet)) {
-          this.selectedSet = ''; // Reset selectedSet if it's not present in loggedSets
+          this.selectedSet = ""; // Reset selectedSet if it's not present in loggedSets
         }
       },
       deep: true,
@@ -88,33 +103,25 @@ export default {
       this.analysisResult = analysisResult;
     },
     logSet() {
-      const enteredSet = this.pcSet.trim().toUpperCase();
-      if (enteredSet !== "") {
-        const parsedSet = this.parsePcSet(enteredSet);
-        const uniqueSet = Array.from(new Set(parsedSet)); // Convert to Set to remove duplicates
-        const uniqueSetString = uniqueSet.join("");
-        if (!this.loggedSets.includes(uniqueSetString)) {
-          this.loggedSets.push(uniqueSetString);
-        }
-        this.pcSet = "";
-        this.selectedSet = uniqueSetString;
+      if (this.invalidPitchClass || this.pcSet === "") {
+        // If the input is invalid or empty, don't log the set and show an error message
+        return;
       }
+
+      const enteredSet = this.pcSet.trim().toUpperCase();
+      if (enteredSet !== "" && !this.loggedSets.includes(enteredSet)) {
+        this.loggedSets.push(enteredSet);
+      }
+      this.pcSet = "";
+      this.selectedSet = enteredSet;
     },
-    // logSet() {
-    //   const enteredSet = this.pcSet.trim().toUpperCase();
-    //   if (enteredSet !== "" && !this.loggedSets.includes(enteredSet)) {
-    //     this.loggedSets.push(enteredSet);
-    //   }
-    //   this.pcSet = "";
-    //   this.selectedSet = enteredSet;
-    // },
     // Add the parsePcSet method
     parsePcSet(set) {
       const replacedSet = set
         .toUpperCase()
         .split('')
         .map((item) => (item === 'T' ? 10 : item === 'E' ? 11 : Number(item)))
-      return replacedSet;
+      return replacedSet.sort();
     },
     selectSet(set) {
       this.selectedSet = set;
@@ -223,4 +230,13 @@ export default {
   opacity: 1;
 }
 
+/* Style for invalid input */
+.is-invalid {
+  border-color: red;
+}
+
+/* Style for invalid feedback message */
+.invalid-feedback {
+  color: red;
+}
 </style>
