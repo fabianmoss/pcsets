@@ -19,7 +19,7 @@
         :cy="250 - (circleSize / 2) * Math.sin(angle + Math.PI/2)"
         r="20"
         :fill="isPitchClassActive(index) ? activeColor : 'white'"
-        :stroke="isPitchClassActive(index) ? activecolor : 'black'"
+        :stroke="isPitchClassActive(index) ? activeColor : 'black'"
         stroke-width="3"
       />
 
@@ -78,8 +78,17 @@ export default {
   },
   methods: {
     isPitchClassActive(index) {
-      // Check if the pitch class at the specified index is in the active pitch-class set
+      console.log("Checking pitch class:", index);
       return this.activePitchClassSet.includes(index);
+    },
+  },
+  watch: {
+    activePitchClassSet: {
+      immediate: true, // Run the watcher immediately after the component is created
+      handler(newActivePitchClassSet) {
+        // Update the active pitch classes when the activePitchClassSet prop changes
+        console.log("Updating active pitch classes:", newActivePitchClassSet);
+      },
     },
   },
 };

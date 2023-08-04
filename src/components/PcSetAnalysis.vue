@@ -23,8 +23,13 @@
           @click="selectSet(set)"
           class="btn btn-secondary"
           :class="{ 'active': set === selectedSet }"
+          @mouseover="showRemoveButton = set"
+          @mouseout="showRemoveButton = null"
         >
           {{ set }}
+          <span class="remove-button" @click="removeSet(set)">
+          <i class="fas fa-times"></i> <!-- Font Awesome "times" icon -->
+        </span>
         </button>
       </div>
     </div>
@@ -39,7 +44,10 @@
     <!-- Add the PcSetVisualizer component below the analytical output -->
     <PcSetVisualizer 
     :activePitchClassSet="parsePcSet(selectedSet)" 
-    :activeColor="activeColor"
+    :active-color="activeColor"
+    :parsePcSet="parsePcSet"
+    :key="selectedSet"
+    @removeSet="removeSet"
     />
   </div>
 </template>
@@ -54,7 +62,18 @@ export default {
       loggedSets: [],
       selectedSet: "",
       activeColor: "#007bff", // Define the active color here
+      showRemoveButton: null,
     };
+  },
+  watch: {
+    loggedSets: {
+      handler(newLoggedSets) {
+        if (!newLoggedSets.includes(this.selectedSet)) {
+          this.selectedSet = ''; // Reset selectedSet if it's not present in loggedSets
+        }
+      },
+      deep: true,
+    },
   },
   methods: {
     analyze(set) {
@@ -88,6 +107,18 @@ export default {
       this.selectedSet = set;
       this.analyze(set); // Call the analyze method when a logged set is selected
     },
+    clearSelectedSet() {
+      this.selectedSet = ""; // Set selectedSet to an empty string to deactivate all pitch classes
+    },
+    removeSet(set) {
+      const index = this.loggedSets.indexOf(set);
+      if (index !== -1) {
+        this.loggedSets.splice(index, 1);
+      }
+      if (this.selectedSet === set) {
+        this.clearSelectedSet(); // Call clearSelectedSet if the selected set is being removed
+      }
+    },
     // Your analysis functions here, working directly with the input string set
     getNormalForm(set) {
       // Placeholder example: Return the set itself as the normal form
@@ -109,6 +140,16 @@ export default {
       // Placeholder example: Return '0' as the number of symmetries
       return set;
     },
+    removeLoggedSet(set) {
+      const index = this.loggedSets.indexOf(set);
+      if (index !== -1) {
+        this.loggedSets.splice(index, 1);
+        if (set === this.selectedSet) {
+          this.selectedSet = "";
+          this.analysisResult = null;
+        }
+      }
+    },
   },
   components: {
     PcSetVisualizer,
@@ -127,6 +168,7 @@ export default {
 }
 
 .btn {
+  position: relative; /* Add this line to position the remove button properly */
   cursor: pointer;
   flex: 0 0 auto; /* Each button will only span the width of the content (pcset entered) */
 }
@@ -148,4 +190,24 @@ export default {
   border-color: #aaa; /* Change this to your preferred inactive border color */
   color: #000;
 }
+
+.pcset-buttons {
+  display: flex;
+  gap: 5px; /* Add some space between the buttons (you can adjust this value) */
+}
+
+.remove-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.btn:hover .remove-button {
+  opacity: 1;
+}
+
 </style>
