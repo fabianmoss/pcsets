@@ -18,8 +18,8 @@
         :cx="250 - (circleSize / 2) * Math.cos(angle + Math.PI/2)"
         :cy="250 - (circleSize / 2) * Math.sin(angle + Math.PI/2)"
         r="20"
-        :fill="isPitchClassActive(index) ? 'blue' : 'white'"
-        :stroke="isPitchClassActive(index) ? 'blue' : 'black'"
+        :fill="isPitchClassActive(index) ? activeColor : 'white'"
+        :stroke="isPitchClassActive(index) ? activecolor : 'black'"
         stroke-width="3"
       />
 
@@ -33,7 +33,7 @@
         font-size="20"
         alignment-baseline="central"
         font-weight="bold"
-        :stroke="isPitchClassActive(index) ? 'white' : 'black'"
+        :fill="isPitchClassActive(index) ? 'white' : 'black'"
       >
         {{ label.label }}
       </text>
@@ -47,6 +47,10 @@ export default {
     activePitchClassSet: {
       type: Array,
       default: () => [],
+    },
+    activeColor: {
+      type: String,
+      default: "#007bff"
     },
     parsePcSet: {
       type: Function,

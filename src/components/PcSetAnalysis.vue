@@ -37,7 +37,10 @@
       <p><strong>Cardinality:</strong> {{ analysisResult.cardinality }}</p>
     </div>
     <!-- Add the PcSetVisualizer component below the analytical output -->
-    <PcSetVisualizer :activePitchClassSet="parsePcSet(selectedSet)" />
+    <PcSetVisualizer 
+    :activePitchClassSet="parsePcSet(selectedSet)" 
+    :activeColor="activeColor"
+    />
   </div>
 </template>
 
@@ -50,6 +53,7 @@ export default {
       analysisResult: null,
       loggedSets: [],
       selectedSet: "",
+      activeColor: "#007bff", // Define the active color here
     };
   },
   methods: {
@@ -80,11 +84,6 @@ export default {
         .map((item) => (item === 'T' ? 10 : item === 'E' ? 11 : Number(item)))
       return replacedSet;
     },
-    // parsePcSet(set) {
-    //   // Implement your parsing logic here to convert the input string to the activePitchClassSet format.
-    //   // For example, if you want to parse the string as an array of integers:
-    //   return set.split('').map(Number);
-    // },
     selectSet(set) {
       this.selectedSet = set;
       this.analyze(set); // Call the analyze method when a logged set is selected
