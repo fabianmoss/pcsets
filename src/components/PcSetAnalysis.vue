@@ -89,12 +89,25 @@ export default {
     },
     logSet() {
       const enteredSet = this.pcSet.trim().toUpperCase();
-      if (enteredSet !== "" && !this.loggedSets.includes(enteredSet)) {
-        this.loggedSets.push(enteredSet);
+      if (enteredSet !== "") {
+        const parsedSet = this.parsePcSet(enteredSet);
+        const uniqueSet = Array.from(new Set(parsedSet)); // Convert to Set to remove duplicates
+        const uniqueSetString = uniqueSet.join("");
+        if (!this.loggedSets.includes(uniqueSetString)) {
+          this.loggedSets.push(uniqueSetString);
+        }
+        this.pcSet = "";
+        this.selectedSet = uniqueSetString;
       }
-      this.pcSet = "";
-      this.selectedSet = enteredSet;
     },
+    // logSet() {
+    //   const enteredSet = this.pcSet.trim().toUpperCase();
+    //   if (enteredSet !== "" && !this.loggedSets.includes(enteredSet)) {
+    //     this.loggedSets.push(enteredSet);
+    //   }
+    //   this.pcSet = "";
+    //   this.selectedSet = enteredSet;
+    // },
     // Add the parsePcSet method
     parsePcSet(set) {
       const replacedSet = set
