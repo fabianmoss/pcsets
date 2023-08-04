@@ -36,17 +36,20 @@
       <p><strong>Number of Symmetries:</strong> {{ analysisResult.numSymmetries }}</p>
       <p><strong>Cardinality:</strong> {{ analysisResult.cardinality }}</p>
     </div>
+    <!-- Add the PcSetVisualizer component below the analytical output -->
+    <PcSetVisualizer :activePitchClassSet="parsePcSet(selectedSet)" />
   </div>
 </template>
 
 <script>
+import PcSetVisualizer from "./PcSetVisualizer.vue";
 export default {
   data() {
     return {
-      pcSet: '',
+      pcSet: "",
       analysisResult: null,
       loggedSets: [],
-      selectedSet: '',
+      selectedSet: "",
     };
   },
   methods: {
@@ -63,12 +66,25 @@ export default {
     },
     logSet() {
       const enteredSet = this.pcSet.trim().toUpperCase();
-      if (enteredSet !== '' && !this.loggedSets.includes(enteredSet)) {
+      if (enteredSet !== "" && !this.loggedSets.includes(enteredSet)) {
         this.loggedSets.push(enteredSet);
       }
-      this.pcSet = '';
+      this.pcSet = "";
       this.selectedSet = enteredSet;
     },
+    // Add the parsePcSet method
+    parsePcSet(set) {
+      const replacedSet = set
+        .toUpperCase()
+        .split('')
+        .map((item) => (item === 'T' ? 10 : item === 'E' ? 11 : Number(item)))
+      return replacedSet;
+    },
+    // parsePcSet(set) {
+    //   // Implement your parsing logic here to convert the input string to the activePitchClassSet format.
+    //   // For example, if you want to parse the string as an array of integers:
+    //   return set.split('').map(Number);
+    // },
     selectSet(set) {
       this.selectedSet = set;
       this.analyze(set); // Call the analyze method when a logged set is selected
@@ -94,6 +110,9 @@ export default {
       // Placeholder example: Return '0' as the number of symmetries
       return set;
     },
+  },
+  components: {
+    PcSetVisualizer,
   },
 };
 </script>
