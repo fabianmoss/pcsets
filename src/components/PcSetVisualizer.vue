@@ -23,6 +23,13 @@
         stroke-width="3"
       />
 
+      <!-- Add the polygon representing the active pitch classes -->
+      <polygon
+        v-if="activePitchClassSet.length > 1"
+        :points="getPolygonPoints()"
+        :fill="activeColorWithOpacity"
+      />
+
       <!-- Add the labels for pitch class numbers -->
       <text
         v-for="(label, index) in pitchClassLabels"
@@ -37,6 +44,7 @@
       >
         {{ label.label }}
       </text>
+
     </svg>
   </div>
 </template>
@@ -51,6 +59,10 @@ export default {
     activeColor: {
       type: String,
       default: "#007bff"
+    },
+    activeOpacity: {
+      type: Number,
+      default: 0.5,
     },
     parsePcSet: {
       type: Function,
@@ -75,11 +87,34 @@ export default {
         return { angle, label: index.toString() };
       });
     },
+    activeColorWithOpacity() {
+      // Apply opacity to the active color
+      const rgbaColor = this.hexToRgba(this.activeColor, this.activeOpacity);
+      return rgbaColor;
+    },
   },
   methods: {
     isPitchClassActive(index) {
       console.log("Checking pitch class:", index);
       return this.activePitchClassSet.includes(index);
+    },
+    getPolygonPoints() {
+      // Calculate the points for the polygon representing the active pitch classes
+      return this.activePitchClassSet
+        .map((index) => {
+          const angle = this.pitchClassAngles[index];
+          const x = 250 - (this.circleSize / 2) * Math.cos(angle + Math.PI / 2);
+          const y = 250 - (this.circleSize / 2) * Math.sin(angle + Math.PI / 2);
+          return `${x},${y}`;
+        })
+        .join(" ");
+    },
+    hexToRgba(hexColor, opacity) {
+      const hex = hexColor.replace("#", "");
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     },
   },
   watch: {
