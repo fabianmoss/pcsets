@@ -1,6 +1,9 @@
 <template>
   <div>
     <h2 class="mb-4">Pitch-Class Set Analysis</h2>
+    <div class="alert alert-warning" role="alert">
+      This web app is under development. Some features may not work as expected.
+    </div>
     <div class="form-group position-relative">
       <label for="pcSetInput">Enter Pitch-Class Set:</label>
       <input
