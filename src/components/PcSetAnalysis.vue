@@ -44,11 +44,11 @@
       </div>
     </div>
     <div v-if="analysisResult" class="mt-4">
-      <p><strong>Normal Form:</strong> {{ analysisResult.normalForm }}</p>
+      <!-- <p><strong>Normal Form:</strong> {{ analysisResult.normalForm }}</p>
       <p><strong>Prime Form:</strong> {{ analysisResult.primeForm }}</p>
       <p><strong>Forte Number:</strong> {{ analysisResult.forteNumber }}</p>
       <p><strong>Set Class:</strong> {{ analysisResult.setClass }}</p>
-      <p><strong>Number of Symmetries:</strong> {{ analysisResult.numSymmetries }}</p>
+      <p><strong>Number of Symmetries:</strong> {{ analysisResult.numSymmetries }}</p> -->
       <p><strong>Cardinality:</strong> {{ analysisResult.cardinality }}</p>
     </div>
     <!-- Add the PcSetVisualizer component below the analytical output -->
@@ -71,7 +71,7 @@ export default {
       analysisResult: null,
       loggedSets: [],
       selectedSet: "",
-      activeColor: "#007bff", // Define the active color here
+      activeColor: "#007bff",
       showRemoveButton: null,
     };
   },
@@ -112,19 +112,24 @@ export default {
       }
 
       const enteredSet = this.pcSet.trim().toUpperCase();
-      if (enteredSet !== "" && !this.loggedSets.includes(enteredSet)) {
-        this.loggedSets.push(enteredSet);
+      
+      // Convert multiset to set
+      const set = Array.from(new Set(enteredSet)).sort().join('');
+
+      if (set !== "" && !this.loggedSets.includes(set)) {
+        this.loggedSets.push(set);
       }
       this.pcSet = "";
-      this.selectedSet = enteredSet;
+      this.selectedSet = set;
     },
     // Add the parsePcSet method
     parsePcSet(set) {
-      const replacedSet = set
+      const parsed = set
         .toUpperCase()
         .split('')
         .map((item) => (item === 'T' ? 10 : item === 'E' ? 11 : Number(item)))
-      return replacedSet.sort();
+        .sort()
+      return parsed;
     },
     selectSet(set) {
       this.selectedSet = set;
